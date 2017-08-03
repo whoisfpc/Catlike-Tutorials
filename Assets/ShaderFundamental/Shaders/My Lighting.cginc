@@ -5,13 +5,13 @@
 #include "UnityPBSLighting.cginc"
 
 float4 _Tint;
-sampler2D _MainTex;
+sampler2D _MainTex, _DetailTex;
 float _Metallic;
 float _Smoothness;
-float4 _MainTex_ST;
+float4 _MainTex_ST, _DetailTex_ST;
 
-sampler2D _HeightMap;
-float4 _HeightMap_TexelSize;
+sampler2D _NormalMap, _DetailNormalMap;
+float _BumpScale, _DetailBumpScale;
 
 struct VertexData {
 	float4 position : POSITION;
@@ -21,7 +21,7 @@ struct VertexData {
 
 struct Interpolators {
 	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD0;
+	float4 uv : TEXCOORD0;
 	float3 normal : TEXCOORD1;
 	float3 worldPos : TEXCOORD2;
 
@@ -46,7 +46,8 @@ Interpolators MyVertexProgram (VertexData v) {
 	i.position = UnityObjectToClipPos(v.position);
 	i.worldPos = mul(unity_ObjectToWorld, v.position);
 	i.normal = UnityObjectToWorldNormal(v.normal);
-	i.uv = TRANSFORM_TEX(v.uv, _MainTex);
+	i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
+	i.uv.zw = TRANSFORM_TEX(v.uv, _DetailTex);
 	ComputeVertexLightColor(i);
 	return i;
 }
@@ -81,23 +82,19 @@ UnityIndirect CreateIndirectLight (Interpolators i) {
 }
 
 void InitializeFragmentNormal(inout Interpolators i) {
-	float2 du = float2(_HeightMap_TexelSize.x * 0.5, 0);
-	float u1 = tex2D(_HeightMap, i.uv - du);
-	float u2 = tex2D(_HeightMap, i.uv + du);
-
-	float2 dv = float2(_HeightMap_TexelSize.y * 0.5, 0);
-	float v1 = tex2D(_HeightMap, i.uv - dv);
-	float v2 = tex2D(_HeightMap, i.uv + dv);
-
-	i.normal = float3(u1 - u2, 1, v1 - v2);
-	i.normal = normalize(i.normal);
+	float3 mainNormal = UnpackScaleNormal(tex2D(_NormalMap, i.uv.xy), _BumpScale);
+	float3 detailNormal = UnpackScaleNormal(tex2D(_DetailNormalMap, i.uv.zw), _DetailBumpScale);
+	i.normal = BlendNormals(mainNormal, detailNormal);
+	i.normal = i.normal.xzy;
 }
 
 float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
 	InitializeFragmentNormal(i);
 	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
-	float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
+	float3 albedo = tex2D(_MainTex, i.uv.xy).rgb * _Tint.rgb;
+	albedo *= tex2D(_DetailTex, i.uv.zw) * unity_ColorSpaceDouble;
+
 	float3 specularTint;
 	float oneMinusReflectivity;
 	albedo = DiffuseAndSpecularFromMetallic(

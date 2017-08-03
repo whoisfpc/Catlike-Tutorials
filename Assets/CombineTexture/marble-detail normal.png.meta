@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f06d76555daa3304eab8e8d0be1179e5
+guid: 8ce95cf6cbeff3546bca66f8508f221d
 timeCreated: 1500262651
 licenseType: Free
 TextureImporter:
@@ -8,7 +8,7 @@ TextureImporter:
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
-    sRGBTexture: 1
+    sRGBTexture: 0
     linearTexture: 0
     fadeOut: 1
     borderMipMap: 0
@@ -17,9 +17,9 @@ TextureImporter:
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
-    convertToNormalMap: 0
+    convertToNormalMap: 1
     externalNormalMap: 0
-    heightScale: 0.25
+    heightScale: 0.1
     normalMapFilter: 0
   isReadable: 0
   grayScaleToAlpha: 0
@@ -49,7 +49,7 @@ TextureImporter:
   alphaUsage: 1
   alphaIsTransparency: 0
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: 1
   textureShape: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
