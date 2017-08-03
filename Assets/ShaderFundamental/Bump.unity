@@ -39,7 +39,7 @@ RenderSettings:
   m_CustomReflection: {fileID: 1683134517039983843, guid: 0000000000000000d000000000000000,
     type: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.95066124, g: 1.0229884, b: 1.0658203, a: 1}
+  m_IndirectSpecularColor: {r: 0.9508206, g: 1.0231649, b: 1.065984, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -496,7 +496,6 @@ GameObject:
   - component: {fileID: 2050787512}
   - component: {fileID: 2050787511}
   - component: {fileID: 2050787510}
-  - component: {fileID: 2050787509}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -504,19 +503,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2050787509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2050787508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c9521b461ab56d4fbcd26c356e69566, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: 0.01
-  scale: 0.1
 --- !u!23 &2050787510
 MeshRenderer:
   m_ObjectHideFlags: 0

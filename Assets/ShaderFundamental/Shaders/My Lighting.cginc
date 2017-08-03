@@ -24,11 +24,18 @@ struct Interpolators {
 	float4 position : SV_POSITION;
 	float4 uv : TEXCOORD0;
 	float3 normal : TEXCOORD1;
-	float4 tangent : TEXCOORD2;
-	float3 worldPos : TEXCOORD3;
+
+	#if defined(BINORMAL_PER_FRAGMENT)
+		float4 tangent : TEXCOORD2;
+	#else
+		float3 tangent : TEXCOORD2;
+		float3 binormal : TEXCOORD3;
+	#endif
+
+	float3 worldPos : TEXCOORD4;
 
 	#if defined(VERTEXLIGHT_ON)
-		float3 vertexLightColor : TEXCOORD4;
+		float3 vertexLightColor : TEXCOORD5;
 	#endif
 };
 
@@ -43,12 +50,25 @@ void ComputeVertexLightColor (inout Interpolators i) {
 	#endif
 }
 
+float3 CreateBinormal (float3 normal, float3 tangent, float binormalSign) {
+	return cross(normal, tangent.xyz) *
+		(binormalSign * unity_WorldTransformParams.w);
+}
+
+
 Interpolators MyVertexProgram (VertexData v) {
 	Interpolators i;
 	i.position = UnityObjectToClipPos(v.position);
 	i.worldPos = mul(unity_ObjectToWorld, v.position);
 	i.normal = UnityObjectToWorldNormal(v.normal);
-	i.tangent = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+
+	#if defined(BINORMAL_PER_FRAGMENT)
+		i.tangent = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
+	#else
+		i.tangent = UnityObjectToWorldDir(v.tangent.xyz);
+		i.binormal = CreateBinormal(i.normal, i.tangent, v.tangent.w);
+	#endif
+
 	i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
 	i.uv.zw = TRANSFORM_TEX(v.uv, _DetailTex);
 	ComputeVertexLightColor(i);
@@ -89,8 +109,11 @@ void InitializeFragmentNormal(inout Interpolators i) {
 	float3 detailNormal = UnpackScaleNormal(tex2D(_DetailNormalMap, i.uv.zw), _DetailBumpScale);
 	float3 tangentSpaceNormal = BlendNormals(mainNormal, detailNormal);
 
-	float binormal = cross(i.normal, i.tangent.xyz) *
-		(i.tangent.w * unity_WorldTransformParams.w);
+	#if defined(BINORMAL_PER_FRAGMENT)
+		float3 binormal = CreateBinormal(i.normal, i.tangent.xyz, i.tangent.w);
+	#else
+		float3 binormal = i.binormal;
+	#endif
 	i.normal = normalize(
 		tangentSpaceNormal.x * i.tangent +
 		tangentSpaceNormal.y * binormal +

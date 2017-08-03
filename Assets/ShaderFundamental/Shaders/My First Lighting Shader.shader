@@ -14,6 +14,12 @@ Shader "Custom/My First Lighting Shader" {
 		_DetailBumpScale ("Detail Bump Scale", Float) = 1
 	}
 
+	CGINCLUDE
+
+	#define BINORMAL_PER_FRAGMENT
+
+	ENDCG
+
 	SubShader {
 
 		Pass {
