@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Tetrahedron : MonoBehaviour
 {
 	public float scale = 1f;
 	private Mesh mesh;
-	private Vector3[] vertices;
+	private Vector3[] vertices = null;
 
 	void Awake()
 	{
@@ -16,31 +18,19 @@ public class Tetrahedron : MonoBehaviour
 	{
 		GetComponent<MeshFilter>().mesh = mesh = new Mesh();
 		mesh.name = "Terahedron";
-		vertices = new Vector3[12];
-		var v0 = new Vector3(0, 0, 0);
-		var v1 = new Vector3(1, 0, 0);
-		var v2 = new Vector3(0.5f, 0, 0.5f * Mathf.Sqrt(3));
-		var v3 = new Vector3(0.5f, Mathf.Sqrt(2f/3f), v2.z / 3);
-		vertices[0] = v0;
-		vertices[1] = v1;
-		vertices[2] = v2;
-		vertices[3] = v0;
-		vertices[4] = v3;
-		vertices[5] = v1;
-		vertices[6] = v1;
-		vertices[7] = v3;
-		vertices[8] = v2;
-		vertices[9] = v2;
-		vertices[10] = v3;
-		vertices[11] = v0;
+		vertices = new Vector3[4];
+		vertices[0] = new Vector3(0, 0, 0);
+		vertices[1] = new Vector3(1, 0, 0);
+		vertices[2] = new Vector3(0.5f, 0, 0.5f * Mathf.Sqrt(3));
+		vertices[3] = new Vector3(0.5f, Mathf.Sqrt(2f/3f), Mathf.Sqrt(3) / 6);
 		mesh.vertices = vertices;
 
 		var triangles = new int[12];
 		int i = 0;
 		i = SetTriangle(triangles, i, 0, 1, 2);
-		i = SetTriangle(triangles, i, 3, 4, 5);
-		i = SetTriangle(triangles, i, 6, 7, 8);
-		i = SetTriangle(triangles, i, 9, 10, 11);
+		i = SetTriangle(triangles, i, 0, 3, 1);
+		i = SetTriangle(triangles, i, 1, 3, 2);
+		i = SetTriangle(triangles, i, 2, 3, 0);
 		mesh.triangles = triangles;
 
 		mesh.RecalculateNormals();
@@ -58,9 +48,10 @@ public class Tetrahedron : MonoBehaviour
 	{
 		if (vertices != null)
 		{
+			Gizmos.color = Color.black;
 			foreach (var vertex in vertices)
 			{
-				Gizmos.DrawSphere(transform.TransformPoint(vertex), 0.1f);
+				Gizmos.DrawSphere(transform.TransformPoint(vertex), 0.02f);
 			}
 		}
 	}
