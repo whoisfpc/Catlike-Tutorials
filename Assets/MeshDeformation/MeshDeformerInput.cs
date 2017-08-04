@@ -2,7 +2,6 @@
 
 namespace MeshDeformer
 {
-    [RequireComponent(typeof(MeshFilter))]
     public class MeshDeformerInput : MonoBehaviour
     {
         public float force = 10f;
