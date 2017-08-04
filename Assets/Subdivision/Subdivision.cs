@@ -80,6 +80,34 @@ public class Subdivision : MonoBehaviour
 		}
 	}
 
+	void OnGUI()
+	{
+		if (!onSubdivision)
+		{
+			if (GUI.Button(new Rect(10, 10, 150, 50), "Start new subdivision"))
+			{
+				skipCurrentSubdivision = false;
+				StartCoroutine(ExecuteSubdivision());
+			}
+		}
+		else
+		{
+			GUI.enabled = false;
+			GUI.Button(new Rect(10, 10, 150, 50), "Subdivision executing...");
+			GUI.enabled = true;
+		}
+		GUI.enabled = onSubdivision;
+		if (GUI.Button(new Rect(10, 70, 150, 50), "Next vertices adjust") && onSubdivision)
+		{
+			continueNextStep = true;
+		}
+		if (GUI.Button(new Rect(10, 130, 150, 50), "Skip current subdivision") && onSubdivision)
+		{
+			skipCurrentSubdivision = true;
+		}
+		GUI.enabled = true;		
+	}
+
 	IEnumerator ExecuteSubdivision()
 	{
 		onSubdivision = true;
