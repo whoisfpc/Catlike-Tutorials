@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 940785483}
   - component: {fileID: 940785482}
   - component: {fileID: 940785481}
+  - component: {fileID: 940785484}
   m_Layer: 0
   m_Name: Tetrahedron
   m_TagString: Untagged
@@ -190,6 +191,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scale: 1
+--- !u!114 &940785484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 940785479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44c1cf8d380725f43afd61d3b174107e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1617136863
 GameObject:
   m_ObjectHideFlags: 0

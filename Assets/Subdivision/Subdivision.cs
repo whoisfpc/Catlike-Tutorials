@@ -133,10 +133,15 @@ public class Subdivision : MonoBehaviour
 			var right = vertices[edge.v1];
 			var pair = edgeDict[edge];
 			var bottom = vertices[pair.left];
-			
-			var top = vertices[pair.right];
-
-			newVertices[midIdx] = (left * 3 + right * 3 + bottom + top) / 8f;
+			if (pair.right == -1)
+			{
+				newVertices[midIdx] = (left * 13 + right * 13 + bottom * 6) / 32f;
+			}
+			else
+			{
+				var top = vertices[pair.right];
+				newVertices[midIdx] = (left * 3 + right * 3 + bottom + top) / 8f;
+			}
 		}
 
 		// Adjust origin vertices
@@ -148,9 +153,13 @@ public class Subdivision : MonoBehaviour
 			{
 				factor = 3f / (8f * n);
 			}
-			else
+			else if (n == 3)
 			{
 				factor = 3f / 16f;
+			}
+			else // n == 2
+			{
+				factor = 3f / 8f;
 			}
 			var point = vertices[i] * (1f - n * factor);
 			neighbors[i].ForEach(p => {
