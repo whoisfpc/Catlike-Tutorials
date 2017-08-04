@@ -43,16 +43,4 @@ public class Tetrahedron : MonoBehaviour
 		triangles[i+2] = v2;
 		return i + 3;
 	}
-
-	void OnDrawGizmos()
-	{
-		if (vertices != null)
-		{
-			Gizmos.color = Color.black;
-			foreach (var vertex in vertices)
-			{
-				Gizmos.DrawSphere(transform.TransformPoint(vertex), 0.02f);
-			}
-		}
-	}
 }

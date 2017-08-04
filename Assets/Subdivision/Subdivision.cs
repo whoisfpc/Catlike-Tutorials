@@ -5,11 +5,30 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Subdivision : MonoBehaviour
 {
+	public bool isSingleStep = false;
+	public bool isAuto = false;
 	private Mesh mesh;
+	private Vector3[] aroundVertices = null;
+	private Vector3 adjustVertex;
+	private Vector3 afterAdjustVertex;
+	private WaitForSeconds waitTime = null;
+	private WaitUntil waitUntil = null;
+	private bool onAdjust = false;
+	private bool onSubdivision = false;
+	private bool continueNextStep = false;
+	private bool skipCurrentSubdivision = false;
 
 	void Start()
 	{
 		mesh = GetComponent<MeshFilter>().mesh;
+		if (isSingleStep)
+		{
+			waitTime = new WaitForSeconds(1f);
+			if (!isAuto)
+			{
+				waitUntil = new WaitUntil(() => continueNextStep || skipCurrentSubdivision);
+			}
+		}
 	}
 
 	int SetTriangle(int[] triangles, int i, int v0, int v1, int v2)
@@ -21,14 +40,49 @@ public class Subdivision : MonoBehaviour
 	}
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) && !onSubdivision)
 		{
-			ExecuteSubdivision();
+			skipCurrentSubdivision = false;
+			StartCoroutine(ExecuteSubdivision());
+		}
+		if (Input.GetKeyDown(KeyCode.J) && onSubdivision)
+		{
+			continueNextStep = true;
+		}
+		if (Input.GetKeyDown(KeyCode.K) && onSubdivision)
+		{
+			skipCurrentSubdivision = true;
 		}
 	}
 
-	void ExecuteSubdivision()
+	void OnDrawGizmos()
 	{
+		var r = 0.005f;
+		if (onAdjust && aroundVertices != null)
+		{
+			Gizmos.color = Color.green;
+			for (int i = 0; i < aroundVertices.Length; i++)
+			{
+				Gizmos.DrawSphere(transform.TransformPoint(aroundVertices[i]), r);
+				if (i != aroundVertices.Length -1)
+				{
+					Gizmos.DrawLine(aroundVertices[i], aroundVertices[i+1]);
+				}
+				else
+				{
+					Gizmos.DrawLine(aroundVertices[i], aroundVertices[0]);
+				}
+			}
+			Gizmos.color = Color.blue;
+			Gizmos.DrawSphere(transform.TransformPoint(adjustVertex), r);
+			Gizmos.color = Color.red;
+			Gizmos.DrawSphere(transform.TransformPoint(afterAdjustVertex), r);
+		}
+	}
+
+	IEnumerator ExecuteSubdivision()
+	{
+		onSubdivision = true;
 		var triangles = mesh.triangles;
 		List<int>[] neighbors = new List<int>[mesh.vertexCount];
 		Dictionary<Edge, Pair> edgeDict = new Dictionary<Edge, Pair>();
@@ -124,7 +178,8 @@ public class Subdivision : MonoBehaviour
 			j = SetTriangle(newTriangles, j, m2, m1, v2);
 			j = SetTriangle(newTriangles, j, m0, m1, m2);
 		}
-
+		// Start draw gizmos
+		onAdjust = true;
 		// Adjust new vertices
 		foreach (var edge in edgeMidDict.Keys)
 		{
@@ -133,14 +188,27 @@ public class Subdivision : MonoBehaviour
 			var right = vertices[edge.v1];
 			var pair = edgeDict[edge];
 			var bottom = vertices[pair.left];
+			adjustVertex = newVertices[midIdx];
 			if (pair.right == -1)
 			{
+				aroundVertices = new Vector3[]{left, bottom, right};
 				newVertices[midIdx] = (left * 13 + right * 13 + bottom * 6) / 32f;
 			}
 			else
 			{
 				var top = vertices[pair.right];
+				aroundVertices = new Vector3[]{left, bottom, right, top};
 				newVertices[midIdx] = (left * 3 + right * 3 + bottom + top) / 8f;
+			}
+			afterAdjustVertex = newVertices[midIdx];
+			if (isAuto)
+			{
+				yield return waitTime;
+			}
+			else
+			{
+				yield return waitUntil;
+				continueNextStep = false;
 			}
 		}
 
@@ -165,13 +233,33 @@ public class Subdivision : MonoBehaviour
 			neighbors[i].ForEach(p => {
 				point += factor * vertices[p];
 			});
+			adjustVertex = newVertices[i];
+			afterAdjustVertex = point;
+			aroundVertices = new Vector3[n];
+			for (int j = 0; j < n; j++)
+			{
+				aroundVertices[j] = vertices[neighbors[i][j]];
+			}
 			newVertices[i] = point;
+			if (isAuto)
+			{
+				yield return waitTime;
+			}
+			else
+			{
+				yield return waitUntil;
+				continueNextStep = false;
+			}
 		}
+		// Stop draw gizmos
+		onAdjust = false;
 
 		// Apply new mesh
 		mesh.vertices = newVertices;
 		mesh.triangles = newTriangles;
 		mesh.RecalculateNormals();
+
+		onSubdivision = false;
 	}
 
 	void ShowLog(List<int>[] neighbors, Dictionary<Edge, Pair> edgeDict)
