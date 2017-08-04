@@ -105,7 +105,7 @@ public class Subdivision : MonoBehaviour
 		{
 			skipCurrentSubdivision = true;
 		}
-		GUI.enabled = true;		
+		GUI.enabled = true;
 	}
 
 	IEnumerator ExecuteSubdivision()
