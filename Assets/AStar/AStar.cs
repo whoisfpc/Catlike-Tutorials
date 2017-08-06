@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 public class AStar : MonoBehaviour
 {
+
+	public enum DistanceType
+	{
+		Euclidean,
+		Manhattan
+	}
+
 	enum NodeType
 	{
 		start,
@@ -50,6 +57,7 @@ public class AStar : MonoBehaviour
 
 	public Vector2 startPoint;
 	public Vector2 endPoint;
+	public DistanceType distanceType = DistanceType.Manhattan;
 
 	Node[,] map = null;
 	Node startNode, endNode;
@@ -63,7 +71,7 @@ public class AStar : MonoBehaviour
 			for (int j = 0; j < columns; j++)
 			{
 				map[i, j] = new Node(NodeType.walkable, i, j);
-				if (i == 4 && (j >= 2 && j <= 7))
+				if (i == 4 && (j >= 2 && j <= 4))
 				{
 					map[i, j].nodeType = NodeType.unwalkable;
 				}
@@ -85,7 +93,12 @@ public class AStar : MonoBehaviour
 
 	float ManhattanDistance(Node a, Node b)
 	{
-		return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+		return 10 * (Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y));
+	}
+
+	float EuclideanDistance(Node a, Node b)
+	{
+		return 14 * (Mathf.Sqrt(Mathf.Pow(a.x - b.x, 2f) + Mathf.Pow(a.y - b.y, 2f)));
 	}
 
 	void InitMapState()
@@ -93,7 +106,15 @@ public class AStar : MonoBehaviour
 		foreach (var node in map)
 		{
 			node.activeType = ActiveType.none;
-			node.F = ManhattanDistance(node, endNode);
+			node.G = 0;
+			if (distanceType == DistanceType.Manhattan)
+			{
+				node.F = ManhattanDistance(node, endNode);
+			}
+			else if (distanceType == DistanceType.Euclidean)
+			{
+				node.F = EuclideanDistance(node, endNode);
+			}
 		}
 	}
 

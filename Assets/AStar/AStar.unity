@@ -137,8 +137,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 10
   columns: 10
-  startPoint: {x: 0, y: 0}
-  endPoint: {x: 3, y: 7}
+  startPoint: {x: 2, y: 3}
+  endPoint: {x: 6, y: 3}
+  distanceType: 1
 --- !u!4 &131986483
 Transform:
   m_ObjectHideFlags: 0
