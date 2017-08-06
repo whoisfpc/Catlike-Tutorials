@@ -27,15 +27,14 @@ public class AStar : MonoBehaviour
 		none
 	}
 
-	class Node
+	class Node : System.IComparable<Node>
 	{
 		public NodeType nodeType = NodeType.walkable;
 		public Node parent = null;
-		private float g, f, h;
-		public float G { get{return g;} set{g = value; h = g + f;}}
-		public float F { get{return f;} set{f = value; h = g + f;}}
-		public float H { get{ return h;}}
-		
+		private float f, g, h;
+		public float G { get{return g;} set{g = value; f = g + h;}}
+		public float H { get{return h;} set{h = value; f = g + h;}}
+		public float F { get{return f;} }
 		public int x, y;
 
 		public ActiveType activeType = ActiveType.none;
@@ -45,6 +44,15 @@ public class AStar : MonoBehaviour
 			this.nodeType = nodeType;
 			this.x = x;
 			this.y = y;
+		}
+
+		public int CompareTo(Node other)
+		{
+			if (other == null)
+			{
+				return 1;
+			}
+			return f.CompareTo(other.f);
 		}
 	}
 
@@ -109,11 +117,11 @@ public class AStar : MonoBehaviour
 			node.G = 0;
 			if (distanceType == DistanceType.Manhattan)
 			{
-				node.F = ManhattanDistance(node, endNode);
+				node.H = ManhattanDistance(node, endNode);
 			}
 			else if (distanceType == DistanceType.Euclidean)
 			{
-				node.F = EuclideanDistance(node, endNode);
+				node.H = EuclideanDistance(node, endNode);
 			}
 		}
 	}
@@ -126,12 +134,12 @@ public class AStar : MonoBehaviour
 			list.AddLast(node);
 			return;
 		}
-		if (node.H <= list.First.Value.H)
+		if (node.F <= list.First.Value.F)
 		{
 			list.AddBefore(list.First, node);
 			return;
 		}
-		if (node.H > list.Last.Value.H)
+		if (node.F > list.Last.Value.F)
 		{
 			list.AddLast(node);
 			return;
@@ -139,7 +147,7 @@ public class AStar : MonoBehaviour
 		var linkedNode = list.First;
 		while (linkedNode.Next != null)
 		{
-			if (node.H > linkedNode.Value.H && node.H <= linkedNode.Next.Value.H)
+			if (node.F > linkedNode.Value.F && node.F <= linkedNode.Next.Value.F)
 			{
 				list.AddAfter(linkedNode, node);
 				break;
