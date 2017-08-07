@@ -65,6 +65,24 @@ public class AStar : MonoBehaviour
 			return (x == node.x) && (y == node.y)
 				&& (f == node.f) && (g == node.g) && (h == node.h);
 		}
+
+		public override int GetHashCode()
+		{
+			return ShiftAndWrap(x.GetHashCode(), 6) ^ ShiftAndWrap(y.GetHashCode(), 4)
+				^ ShiftAndWrap(g.GetHashCode(), 2) ^ ShiftAndWrap(h.GetHashCode(), 0);
+		}
+
+		public int ShiftAndWrap(int value, int positions)
+		{
+			positions = positions & 0x1F;
+
+			// Save the existing bit pattern, but interpret it as an unsigned integer.
+			uint number = System.BitConverter.ToUInt32(System.BitConverter.GetBytes(value), 0);
+			// Preserve the bits to be discarded.
+			uint wrapped = number >> (32 - positions);
+			// Shift and wrap the discarded bits.
+			return System.BitConverter.ToInt32(System.BitConverter.GetBytes((number << positions) | wrapped), 0);
+		}
 	}
 
 	static int[,] steps = new int[,]{{-1, -1, 14}, {0, -1, 10}, {1, -1, 14},
