@@ -54,6 +54,17 @@ public class AStar : MonoBehaviour
 			}
 			return f.CompareTo(other.f);
 		}
+
+		public override bool Equals(object obj)
+		{
+			Node node = obj as Node;
+			if (node == null)
+			{
+				return false;
+			}
+			return (x == node.x) && (y == node.y)
+				&& (f == node.f) && (g == node.g) && (h == node.h);
+		}
 	}
 
 	static int[,] steps = new int[,]{{-1, -1, 14}, {0, -1, 10}, {1, -1, 14},
@@ -126,62 +137,16 @@ public class AStar : MonoBehaviour
 		}
 	}
 
-	static void AStarAdd(LinkedList<Node> list, Node node)
-	{
-		node.activeType = ActiveType.open;
-		if (list.Count == 0)
-		{
-			list.AddLast(node);
-			return;
-		}
-		if (node.F <= list.First.Value.F)
-		{
-			list.AddBefore(list.First, node);
-			return;
-		}
-		if (node.F > list.Last.Value.F)
-		{
-			list.AddLast(node);
-			return;
-		}
-		var linkedNode = list.First;
-		while (linkedNode.Next != null)
-		{
-			if (node.F > linkedNode.Value.F && node.F <= linkedNode.Next.Value.F)
-			{
-				list.AddAfter(linkedNode, node);
-				break;
-			}
-			linkedNode = linkedNode.Next;
-		}
-		if (linkedNode.Next == null)
-		{
-			Debug.LogError("unexpect error");
-		}
-	}
-
-	static Node AStarRemove(LinkedList<Node> list)
-	{
-		var node = list.First.Value;
-		node.activeType = ActiveType.closed;
-		list.RemoveFirst();
-		return node;
-	}
-
-	static void AStarAdjust(LinkedList<Node> list, Node node)
-	{
-		list.Remove(node);
-		AStarAdd(list, node);
-	}
-
 	void AStarPathFind()
 	{
 		InitMapState();
-		LinkedList<Node> open = new LinkedList<Node>();
-		AStarAdd(open, startNode);
+		PriorityQueue<Node> open = new PriorityQueue<Node>();
+		startNode.activeType = ActiveType.open;
+		open.Add(startNode);
 		while (open.Count > 0)
 		{
-			var node = AStarRemove(open);
+			var node = open.Poll();
+			node.activeType = ActiveType.closed;
 			
 			if (node.nodeType == NodeType.end)
 			{
@@ -202,13 +167,15 @@ public class AStar : MonoBehaviour
 				{
 					map[x, y].G = dis;
 					map[x, y].parent = node;
-					AStarAdd(open, map[x, y]);
+					map[x, y].activeType = ActiveType.open;
+					open.Add(map[x, y]);
 				}
 				else if (dis < map[x, y].G)
 				{
 					map[x, y].G = dis;
 					map[x, y].parent = node;
-					AStarAdjust(open, map[x, y]);
+					open.Remove(map[x, y]);
+					open.Add(map[x, y]);
 				}
 			}
 		}
