@@ -12,9 +12,10 @@ namespace AStar
 			Manhattan
 		}
 
-		static int[,] steps = new int[,]{{-1, -1, 14}, {0, -1, 10}, {1, -1, 14},
+		static int[,] steps1 = new int[,]{{-1, -1, 14}, {0, -1, 10}, {1, -1, 14},
 										{-1, 0, 10},               {1, 0, 10}, 
 										{-1, 1, 14},  {0, 1, 10},  {1, 1, 14}};
+		static int [,] steps2 = {{0, -1, 10}, {1, 0, 10}, {0, 1, 10}, {-1, 0, 10}};
 
 		public int rows = 10;
 		public int columns = 10;
@@ -23,6 +24,7 @@ namespace AStar
 		public Vector2 startPoint;
 		public Vector2 endPoint;
 		public DistanceType distanceType = DistanceType.Manhattan;
+		public bool allowDiagonal;
 
 		Node[,] map = null;
 		Node startNode, endNode;
@@ -145,6 +147,15 @@ namespace AStar
 			PriorityQueue<Node> open = new PriorityQueue<Node>();
 			startNode.ActiveType = ActiveType.open;
 			open.Add(startNode);
+			int[,] steps;
+			if (allowDiagonal)
+			{
+				steps = steps1;
+			}
+			else
+			{
+				steps = steps2;
+			}
 			while (open.Count > 0)
 			{
 				var node = open.Poll();
