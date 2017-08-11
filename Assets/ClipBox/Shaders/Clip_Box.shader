@@ -67,17 +67,17 @@ Shader "Clip/Box" {
 			// Vector3 newDir = Mathf.Cos(angle) * dir + Mathf.Sin(angle) * Vector3.Cross(axis, dir) + (1.0f - Mathf.Cos(angle)) * Vector3.Dot(axis,dir) * axis;
 
 			float3 dir = IN.worldPos - _Origin;
-			//dir = normalize(dir);
+			// instead rotate the box, we inverse rotate the point
 			float3 rads = float3(-radians(_BoxRotation.x), -radians(_BoxRotation.y), -radians(_BoxRotation.z));
 
 			// rotation euler order is z, x, then y like roll, pitch, and yaw
-			// z
-			dir = cos(rads.z) * dir + sin(rads.z) * cross(float3(0,0,1.0f), dir) + (1.0f - cos(rads.z)) * dot(float3(0,0,1.0f), dir) * float3(0,0,1.0f);
-			// x
-			dir = cos(rads.x) * dir + sin(rads.x) * cross(float3(1.0f,0,0), dir) + (1.0f - cos(rads.x)) * dot(float3(1.0f,0,0), dir) * float3(1.0f,0,0);
+			// wo_fpc comment: invert the rotation order to get correct result
 			// y
 			dir = cos(rads.y) * dir + sin(rads.y) * cross(float3(0,1.0f,0), dir) + (1.0f - cos(rads.y)) * dot(float3(0,1.0f,0), dir) * float3(0,1.0f,0);
-			
+			// x
+			dir = cos(rads.x) * dir + sin(rads.x) * cross(float3(1.0f,0,0), dir) + (1.0f - cos(rads.x)) * dot(float3(1.0f,0,0), dir) * float3(1.0f,0,0);
+			// z
+			dir = cos(rads.z) * dir + sin(rads.z) * cross(float3(0,0,1.0f), dir) + (1.0f - cos(rads.z)) * dot(float3(0,0,1.0f), dir) * float3(0,0,1.0f);
 
 			half3 dist = half3(
 				abs(dir.x), // no negatives
