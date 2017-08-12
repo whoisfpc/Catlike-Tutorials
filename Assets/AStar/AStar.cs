@@ -30,7 +30,6 @@ namespace AStar
 		Node startNode, endNode;
 		List<Vector2> path = new List<Vector2>();
 		NodeType leftClickNodeType = NodeType.start;
-		NodeType rightClickNodeType = NodeType.unwalkable;
 		GLDrawLines glDrawLines;
 
 		void Start()
