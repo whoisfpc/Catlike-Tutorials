@@ -37,23 +37,24 @@ public class NodeEditor : EditorWindow
 		zoomScale = EditorGUI.Slider(new Rect(5, 5, 150, 20), zoomScale, 0.25f, 4f);
 		GUILayout.EndArea();
 
+		GUI.EndGroup(); // use to end implicit group,(21 pixels head offset)
 		var mainRect = areaRect;
 		var scaleRect = new Rect(mainRect.position / zoomScale, mainRect.size / zoomScale);
 		DrawRectangle(mainRect, Color.red, 2);
-		
 		// -- start zoom --
 		var oldMatrix = GUI.matrix;
 		GUIUtility.ScaleAroundPivot(Vector2.one * zoomScale, Vector2.zero);
 		DrawRectangle(mainRect, Color.blue, 2);
 		DrawRectangle(scaleRect, Color.yellow, 2);
 		Handles.DrawLine(Vector2.one, Vector2.one * 100);
-		GUILayout.BeginArea(scaleRect);
+		GUI.BeginGroup(scaleRect);
 		BeginWindows();
 		MainWindow();
 		EndWindows();
-		GUILayout.EndArea();
+		GUI.EndGroup();
 		GUI.matrix = oldMatrix;
 		// -- end zoom --
+		GUI.BeginClip(new Rect(0, 21, Screen.width, Screen.height - 21));
 	}
 
 	void MainWindow()
