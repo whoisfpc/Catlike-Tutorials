@@ -9,13 +9,18 @@ public class NodeEditor : EditorWindow
 	Rect scaleRect;
 	float zoomScale = 1f;
 	Rect areaRect = new Rect(100, 100, 400, 400);
-
+	float tabHeight;
 
 	[MenuItem("NodeEditor/NodeEditor")]
 	static void CreateWindow()
 	{
 		var window = GetWindow<NodeEditor>();
 		window.Show();
+	}
+
+	void OnEnable()
+	{
+		tabHeight = Screen.height - position.height;
 	}
 
 	void OnGUI()
@@ -32,7 +37,6 @@ public class NodeEditor : EditorWindow
 		DrawPoint(Vector2.one * 30, Color.green);
 
 		DrawRectangle(new Rect(0, 0, position.size.x, 50), Color.black, 2);
-
 		GUILayout.BeginArea(new Rect(0, 0, position.size.x, 50));
 		zoomScale = EditorGUI.Slider(new Rect(5, 5, 150, 20), zoomScale, 0.25f, 4f);
 		GUILayout.EndArea();
@@ -54,7 +58,7 @@ public class NodeEditor : EditorWindow
 		GUI.EndGroup();
 		GUI.matrix = oldMatrix;
 		// -- end zoom --
-		GUI.BeginClip(new Rect(0, 21, Screen.width, Screen.height - 21));
+		GUI.BeginGroup(new Rect(0, tabHeight, Screen.width, Screen.height - tabHeight));
 	}
 
 	void MainWindow()
