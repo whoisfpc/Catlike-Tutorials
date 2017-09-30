@@ -29,7 +29,7 @@
 - [ ] Mixed Lighting
 - [ ] Realtime GI, Probe Volumes, LOD Groups
 
-## My Examplea and Experiments
+## My Examples and Experiments
 
 - [AStar](/Assets/Astar)
 - [BSpline](/Assets/BSpline)
