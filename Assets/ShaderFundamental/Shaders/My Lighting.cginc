@@ -103,7 +103,7 @@ float3 BoxProjection (
 		if (cubemapPosition.w > 0) {
 			float3 factors = ((direction > 0 ? boxMax : boxMin) - position) / direction;
 			float scalar = min(min(factors.x, factors.y), factors.z);
-			direction * scalar + (position - cubemapPosition);
+			direction = direction * scalar + (position - cubemapPosition);
 		}
 	#endif
 	return direction;
