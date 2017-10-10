@@ -19,7 +19,7 @@
 - [x] [Bumpiness](/Assets/ShaderFundamental)
 - [x] [Shadows](/Assets/ShaderFundamental)
 - [x] [Reflections](/Assets/ShaderFundamental)
-- [ ] Complex Materials
+- [x] [Complex Materials](/Assets/ShaderFundamental)
 - [ ] More Complexity
 - [ ] Transparency
 - [ ] Semitransparent Shadows
@@ -28,6 +28,7 @@
 - [ ] Deferred Lighting
 - [ ] Mixed Lighting
 - [ ] Realtime GI, Probe Volumes, LOD Groups
+- [ ] Parallax
 
 ## My Examples and Experiments
 
