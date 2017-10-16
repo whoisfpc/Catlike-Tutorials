@@ -21,8 +21,7 @@
 - [x] [Reflections](/Assets/ShaderFundamental)
 - [x] [Complex Materials](/Assets/ShaderFundamental)
 - [x] [More Complexity](/Assets/ShaderFundamental)
-- [x] [Transparency](/Assets/ShaderFundamental)
-- [ ] Semitransparent Shadows
+- [x] [Semitransparent Shadows](/Assets/ShaderFundamental)
 - [ ] Deferred Shading
 - [ ] Fog
 - [ ] Deferred Lighting
