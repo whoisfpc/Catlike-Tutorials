@@ -109,6 +109,28 @@ public class MyLightingShaderGUI : ShaderGUI
 				mat.SetInt("_ZWrite", settings.zWrite ? 1 : 0);
 			}
 		}
+		if (mode == RenderingMode.Fade || mode == RenderingMode.Transparent)
+		{
+			DoSemitransparentShadows();
+		}
+	}
+
+	private void DoSemitransparentShadows()
+	{
+		EditorGUI.BeginChangeCheck();
+		bool semitransparentShadows = EditorGUILayout.Toggle
+		(
+			MakeLabel("Semitransp. Shadows", "Semitransparent Shadows"),
+			IsKeywordEnabled("_SEMITRANSPARENT_SHADOWS")
+		);
+		if (EditorGUI.EndChangeCheck())
+		{
+			SetKeyword("_SEMITRANSPARENT_SHADOWS", semitransparentShadows);
+		}
+		if (!semitransparentShadows)
+		{
+			shouldShowAlphaCutoff = true;
+		}
 	}
 
 	private void DoMain()
