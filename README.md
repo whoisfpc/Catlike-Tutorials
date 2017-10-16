@@ -25,8 +25,10 @@
 - [x] [Deferred Shading](/Assets/ShaderFundamental)
 - [ ] Fog
 - [ ] Deferred Lighting
+- [ ] Static Lighting
 - [ ] Mixed Lighting
 - [ ] Realtime GI, Probe Volumes, LOD Groups
+- [ ] GPU Instancing
 - [ ] Parallax
 
 ## My Examples and Experiments
