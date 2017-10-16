@@ -22,7 +22,7 @@
 - [x] [Complex Materials](/Assets/ShaderFundamental)
 - [x] [More Complexity](/Assets/ShaderFundamental)
 - [x] [Semitransparent Shadows](/Assets/ShaderFundamental)
-- [ ] Deferred Shading
+- [x] [Deferred Shading](/Assets/ShaderFundamental)
 - [ ] Fog
 - [ ] Deferred Lighting
 - [ ] Mixed Lighting
