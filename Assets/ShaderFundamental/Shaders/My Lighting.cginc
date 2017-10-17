@@ -4,6 +4,13 @@
 #include "UnityPBSLighting.cginc"
 #include "AutoLight.cginc"
 
+#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+	#if !defined(FOG_DISTANCE)
+		#define FOG_DEPTH 1
+	#endif
+	#define FOG_ON 1
+#endif
+
 float4 _Tint;
 sampler2D _MainTex, _DetailTex, _DetailMask;
 sampler2D _MetallicMap;
@@ -38,7 +45,11 @@ struct Interpolators {
 		float3 binormal : TEXCOORD3;
 	#endif
 
-	float3 worldPos : TEXCOORD4;
+	#if FOG_DEPTH
+		float4 worldPos : TEXCOORD4;
+	#else
+		float3 worldPos : TEXCOORD4;
+	#endif
 
 	SHADOW_COORDS(5)
 
@@ -57,6 +68,22 @@ struct FragmentOutput {
 		float4 color : SV_Target;
 	#endif
 };
+
+float4 ApplyFog(float4 color, Interpolators i) {
+	#if FOG_ON
+		float viewDistance = length(_WorldSpaceCameraPos - i.worldPos.xyz);
+		#if FOG_DEPTH
+			viewDistance = UNITY_Z_0_FAR_FROM_CLIPSPACE(i.worldPos.w);
+		#endif
+		UNITY_CALC_FOG_FACTOR_RAW(viewDistance);
+		float3 fogColor = 0;
+		#if defined(FORWARD_BASE_PASS)
+			fogColor = unity_FogColor.rgb;
+		#endif
+		color.rgb = lerp(fogColor, color.rgb, saturate(unityFogFactor));
+	#endif
+	return color;
+}
 
 float GetAlpha(Interpolators i) {
 	float alpha = _Tint.a;
@@ -127,7 +154,7 @@ void ComputeVertexLightColor (inout Interpolators i) {
 			unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
 			unity_LightColor[0].rgb, unity_LightColor[1].rgb,
 			unity_LightColor[2].rgb, unity_LightColor[3].rgb,
-			unity_4LightAtten0, i.worldPos, i.normal
+			unity_4LightAtten0, i.worldPos.xyz, i.normal
 		);
 	#endif
 }
@@ -141,7 +168,10 @@ float3 CreateBinormal (float3 normal, float3 tangent, float binormalSign) {
 Interpolators MyVertexProgram (VertexData v) {
 	Interpolators i;
 	i.pos = UnityObjectToClipPos(v.vertex);
-	i.worldPos = mul(unity_ObjectToWorld, v.vertex);
+	i.worldPos.xyz = mul(unity_ObjectToWorld, v.vertex);
+	#if FOG_DEPTH
+		i.worldPos.w = i.pos.z;
+	#endif
 	i.normal = UnityObjectToWorldNormal(v.normal);
 
 	#if defined(BINORMAL_PER_FRAGMENT)
@@ -166,12 +196,12 @@ UnityLight CreateLight (Interpolators i) {
 		light.color = 0;
 	#else
 		#if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
-			light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+			light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos.xyz);
 		#else
 			light.dir = _WorldSpaceLightPos0.xyz;
 		#endif
 
-		UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos);
+		UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos.xyz);
 		light.color = _LightColor0.rgb * attenuation;
 	#endif
 	return light;
@@ -201,13 +231,13 @@ UnityIndirect CreateIndirectLight (Interpolators i, float3 viewDir) {
 		indirectLight.diffuse = i.vertexLightColor;
 	#endif
 	
-	#if defined(FORWARD_BASE_PASS)
+	#if defined(FORWARD_BASE_PASS) || defined(DEFERRED_PASS)
 		indirectLight.diffuse += max(0, ShadeSH9(float4(i.normal, 1)));
 		float3 reflectionDir = reflect(-viewDir, i.normal);
 		Unity_GlossyEnvironmentData envData;
 		envData.roughness = 1 - GetSmoothness(i);
 		envData.reflUVW = BoxProjection(
-			reflectionDir, i.worldPos,
+			reflectionDir, i.worldPos.xyz,
 			unity_SpecCube0_ProbePosition,
 			unity_SpecCube0_BoxMin, unity_SpecCube0_BoxMax
 		);
@@ -215,7 +245,7 @@ UnityIndirect CreateIndirectLight (Interpolators i, float3 viewDir) {
 			UNITY_PASS_TEXCUBE(unity_SpecCube0), unity_SpecCube0_HDR, envData
 		);
 		envData.reflUVW = BoxProjection(
-			reflectionDir, i.worldPos,
+			reflectionDir, i.worldPos.xyz,
 			unity_SpecCube1_ProbePosition,
 			unity_SpecCube1_BoxMin, unity_SpecCube1_BoxMax
 		);
@@ -278,7 +308,7 @@ FragmentOutput MyFragmentProgram (Interpolators i) {
 		clip(alpha - _AlphaCutoff);
 	#endif
 	InitializeFragmentNormal(i);
-	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos.xyz);
 
 	float3 specularTint;
 	float oneMinusReflectivity;
@@ -312,7 +342,7 @@ FragmentOutput MyFragmentProgram (Interpolators i) {
 		#endif
 		output.gBuffer3 = color;
 	#else
-		output.color = color;
+		output.color = ApplyFog(color, i);
 	#endif
 	return output;
 }
