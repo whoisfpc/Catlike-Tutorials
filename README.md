@@ -24,7 +24,7 @@
 - [x] [Semitransparent Shadows](/Assets/ShaderFundamental)
 - [x] [Deferred Shading](/Assets/ShaderFundamental)
 - [x] [Fog](/Assets/ShaderFundamental)
-- [ ] Deferred Lighting
+- [x] [Deferred Lighting](/Assets/ShaderFundamental)
 - [ ] Static Lighting
 - [ ] Mixed Lighting
 - [ ] Realtime GI, Probe Volumes, LOD Groups
