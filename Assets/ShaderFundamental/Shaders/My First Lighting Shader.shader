@@ -3,7 +3,7 @@
 Shader "Custom/My First Lighting Shader" {
 
 	Properties {
-		_Tint ("Tint", Color) = (1, 1, 1, 1)
+		_Color ("Tint", Color) = (1, 1, 1, 1)
 		_MainTex ("Albedo", 2D) = "white" {}
 		[NoScaleOffset] _NormalMap ("Normals", 2D) = "bump" {}
 		_BumpScale ("Bump Scale", Float) = 1
@@ -18,7 +18,7 @@ Shader "Custom/My First Lighting Shader" {
 		[NoScaleOffset] _OcclusionMap ("Occlusion", 2D) = "white" {}
 		_OcclusionStrength("Occlusion Strength", Range(0, 1)) = 1
 		[NoScaleOffset] _DetailMask ("Detail Mask", 2D) = "white" {}
-		_AlphaCutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
+		_Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
 		[HideInInspector] _SrcBlend ("_SrcBlend", Float) = 1
 		[HideInInspector] _DstBlend ("_DstBlend", Float) = 0
 		[HideInInspector] _ZWrite ("_ZWrite", Float) = 1
@@ -53,7 +53,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
 			#pragma multi_compile _ SHADOWS_SCREEN
-			#pragma multi_compile _ VERTEXLIGHT_ON
+			#pragma multi_compile _ LIGHTMAP_ON VERTEXLIGHT_ON
 			#pragma multi_compile_fog
 
 			#pragma vertex MyVertexProgram
@@ -116,7 +116,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_NORMAL_MAP
 			#pragma multi_compile _ UNITY_HDR_ON
 			#pragma multi_compile _ SHADOWS_SCREEN
-			#pragma multi_compile _ VERTEXLIGHT_ON
+			#pragma multi_compile _ LIGHTMAP_ON VERTEXLIGHT_ON
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
