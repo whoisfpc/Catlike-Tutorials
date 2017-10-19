@@ -211,9 +211,17 @@ public class MyLightingShaderGUI : ShaderGUI
 			emissionConfig,
 			false
 		);
-		if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
+		if (EditorGUI.EndChangeCheck())
 		{
-			SetKeyword("_EMISSION_MAP", map.textureValue);
+			if (tex != map.textureValue)
+			{
+				SetKeyword("_EMISSION_MAP", map.textureValue);
+			}
+			foreach (Material mat in editor.targets)
+			{
+				mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
+					
+			}
 		}
 	}
 

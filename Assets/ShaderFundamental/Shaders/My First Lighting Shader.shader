@@ -52,8 +52,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
-			#pragma multi_compile _ SHADOWS_SCREEN
-			#pragma multi_compile _ LIGHTMAP_ON VERTEXLIGHT_ON
+			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
 
 			#pragma vertex MyVertexProgram
@@ -114,9 +113,8 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
-			#pragma multi_compile _ UNITY_HDR_ON
 			#pragma multi_compile _ SHADOWS_SCREEN
-			#pragma multi_compile _ LIGHTMAP_ON VERTEXLIGHT_ON
+			#pragma multi_compile_prepassfinal
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
@@ -147,6 +145,29 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma fragment MyShadowFragmentProgram
 
 			#include "My Shadows.cginc"
+
+			ENDCG
+		}
+
+		Pass {
+			Tags {
+				"LightMode" = "Meta"
+			}
+
+			Cull Off
+
+			CGPROGRAM
+
+			#pragma vertex MyLightmappingVertexProgram
+			#pragma fragment MyLightmappingFragmentProgram
+
+			#pragma shader_feature _METALLIC_MAP
+			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
+			#pragma shader_feature _EMISSION_MAP
+			#pragma shader_feature _DETAIL_MASK
+			#pragma shader_feature _DETAIL_ALBEDO_MAP
+
+			#include "My Lightmapping.cginc"
 
 			ENDCG
 		}
