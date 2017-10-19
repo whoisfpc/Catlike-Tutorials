@@ -25,7 +25,7 @@
 - [x] [Deferred Shading](/Assets/ShaderFundamental)
 - [x] [Fog](/Assets/ShaderFundamental)
 - [x] [Deferred Lighting](/Assets/ShaderFundamental)
-- [ ] Static Lighting
+- [x] [Static Lighting](/Assets/ShaderFundamental)
 - [ ] Mixed Lighting
 - [ ] Realtime GI, Probe Volumes, LOD Groups
 - [ ] GPU Instancing
