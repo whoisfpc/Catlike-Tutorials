@@ -18,6 +18,7 @@ UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 sampler2D _CameraGBufferTexture0;
 sampler2D _CameraGBufferTexture1;
 sampler2D _CameraGBufferTexture2;
+sampler2D _CameraGBufferTexture4;
 float4 _LightColor, _LightDir, _LightPos;
 float _LightAsQuad;
 
@@ -35,7 +36,16 @@ sampler2D _LightTextureB0;
 
 float4x4 unity_WorldToLight;
 
-Interpolators VertexProgram (VertexData v) {
+float GetShadowMaskAttenuation(float2 uv) {
+	float attenuation = 1;
+	#if defined (SHADOWS_SHADOWMASK)
+		float4 mask = tex2D(_CameraGBufferTexture4, uv);
+		attenuation = saturate(dot(mask, unity_OcclusionMaskSelector));
+	#endif
+	return attenuation;
+}
+
+Interpolators VertexProgram(VertexData v) {
 	Interpolators i;
 	i.pos = UnityObjectToClipPos(v.vertex);
 	i.uv = ComputeScreenPos(i.pos);
@@ -89,22 +99,31 @@ UnityLight CreateLight(float2 uv,float3 worldPos, float viewZ) {
 		#endif
 	#endif
 
+	#if defined(SHADOWS_SHADOWMASK)
+		shadowed = true;
+	#endif
+
 	if (shadowed) {
 		float shadowFadeDistance = UnityComputeShadowFadeDistance(worldPos, viewZ);
 		float shadowFade = UnityComputeShadowFade(shadowFadeDistance);
-		shadowAttenuation = saturate(shadowAttenuation + shadowFade);
+		shadowAttenuation = UnityMixRealtimeAndBakedShadows(
+			shadowAttenuation, GetShadowMaskAttenuation(uv), shadowFade
+		);
+
 		#if defined(UNITY_FAST_COHERENT_DYNAMIC_BRANCHING) && defined(SHADOWS_SOFT)
+			#if !defined(SHADOWS_SHADOWMASK)
 			UNITY_BRANCH
-			if (shadowFade > 0.99) {
-				shadowAttenuation = 1;
-			}
+				if (shadowFade > 0.99) {
+					shadowAttenuation = 1;
+				}
+			#endif
 		#endif
 	}
 	light.color = _LightColor.rgb * (attenuation * shadowAttenuation);
 	return light;
 }
 
-float4 FragmentProgram (Interpolators i) : SV_Target {
+float4 FragmentProgram(Interpolators i) : SV_Target {
 	float2 uv = i.uv.xy / i.uv.w;
 	float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
 	depth = Linear01Depth(depth);

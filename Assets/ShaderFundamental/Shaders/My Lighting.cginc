@@ -11,6 +11,12 @@
 	#define FOG_ON 1
 #endif
 
+#if defined(LIGHTMAP_ON) && defined(SHADOWS_SCREEN)
+	#if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK)
+		#define SUBTRACTIVE_LIGHTING 1
+	#endif
+#endif
+
 float4 _Color;
 sampler2D _MainTex, _DetailTex, _DetailMask;
 sampler2D _MetallicMap;
@@ -52,7 +58,7 @@ struct Interpolators {
 		float3 worldPos : TEXCOORD4;
 	#endif
 
-	SHADOW_COORDS(5)
+	UNITY_SHADOW_COORDS(5)
 
 	#if defined(VERTEXLIGHT_ON)
 		float3 vertexLightColor : TEXCOORD6;
@@ -69,6 +75,9 @@ struct FragmentOutput {
 		float4 gBuffer1 : SV_Target1;
 		float4 gBuffer2 : SV_Target2;
 		float4 gBuffer3 : SV_Target3;
+		#if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
+			float4 gBuffer4 : SV_Target4;
+		#endif
 	#else
 		float4 color : SV_Target;
 	#endif
@@ -172,6 +181,7 @@ float3 CreateBinormal (float3 normal, float3 tangent, float binormalSign) {
 
 Interpolators MyVertexProgram (VertexData v) {
 	Interpolators i;
+	UNITY_INITIALIZE_OUTPUT(Interpolators, i);
 	i.pos = UnityObjectToClipPos(v.vertex);
 	i.worldPos.xyz = mul(unity_ObjectToWorld, v.vertex);
 	#if FOG_DEPTH
@@ -193,15 +203,42 @@ Interpolators MyVertexProgram (VertexData v) {
 		i.lightmapUV = v.uv1 * unity_LightmapST.xy + unity_LightmapST.zw;
 	#endif
 
-	TRANSFER_SHADOW(i);
+	UNITY_TRANSFER_SHADOW(i, v.uv1);
 
 	ComputeVertexLightColor(i);
 	return i;
 }
 
+float FadeShadows(Interpolators i, float attenuation) {
+	#if HANDLE_SHADOWS_BLENDING_IN_GI
+		// UNITY_LIGHT_ATTENUATION doesn't fade shadows for us.
+		float viewZ = dot(_WorldSpaceCameraPos - i.worldPos, UNITY_MATRIX_V[2].xyz);
+		float shadowFadeDistance = UnityComputeShadowFadeDistance(i.worldPos, viewZ);
+		float shadowFade = UnityComputeShadowFade(shadowFadeDistance);
+		float bakedAttenuation = UnitySampleBakedOcclusion(i.lightmapUV, i.worldPos);
+		attenuation = UnityMixRealtimeAndBakedShadows(
+			attenuation, bakedAttenuation, shadowFade
+		);
+	#endif
+	return attenuation;
+}
+
+void ApplySubtractiveLighting(Interpolators i, inout UnityIndirect indirectLight) {
+	#if SUBTRACTIVE_LIGHTING
+		UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos.xyz);
+		attenuation = FadeShadows(i, attenuation);
+		float ndotl = saturate(dot(i.normal, _WorldSpaceLightPos0.xyz));
+		float3 shadowedLightEstimate = ndotl * (1 - attenuation) * _LightColor0.rgb;
+		float3 subtractedLight = indirectLight.diffuse - shadowedLightEstimate;
+		subtractedLight = max(subtractedLight, unity_ShadowColor.rgb);
+		subtractedLight = lerp(subtractedLight, indirectLight.diffuse, _LightShadowData.x);
+		indirectLight.diffuse = min(subtractedLight, indirectLight.diffuse);
+	#endif
+}
+
 UnityLight CreateLight (Interpolators i) {
 	UnityLight light;
-	#if defined(DEFERRED_PASS)
+	#if defined(DEFERRED_PASS) || SUBTRACTIVE_LIGHTING
 		light.dir = float3(0, 1, 0);
 		light.color = 0;
 	#else
@@ -212,6 +249,7 @@ UnityLight CreateLight (Interpolators i) {
 		#endif
 
 		UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos.xyz);
+		attenuation = FadeShadows(i, attenuation);
 		light.color = _LightColor0.rgb * attenuation;
 	#endif
 	return light;
@@ -252,6 +290,7 @@ UnityIndirect CreateIndirectLight (Interpolators i, float3 viewDir) {
 					indirectLight.diffuse, lightmapDirection, i.normal
 				);
 			#endif
+			ApplySubtractiveLighting(i, indirectLight);
 		#else
 			indirectLight.diffuse += max(0, ShadeSH9(float4(i.normal, 1)));
 		#endif
@@ -363,6 +402,14 @@ FragmentOutput MyFragmentProgram (Interpolators i) {
 			color.rgb = exp2(-color.rgb);
 		#endif
 		output.gBuffer3 = color;
+		#if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
+			float2 shadowUV = 0;
+			#if defined(LIGHTMAP_ON)
+				shadowUV = i.lightmapUV;
+			#endif
+			output.gBuffer4 =
+				UnityGetRawBakedOcclusions(shadowUV, i.worldPos.xyz);
+		#endif
 	#else
 		output.color = ApplyFog(color, i);
 	#endif
