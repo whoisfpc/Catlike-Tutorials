@@ -211,6 +211,7 @@ public class MyLightingShaderGUI : ShaderGUI
 			emissionConfig,
 			false
 		);
+		editor.LightmapEmissionProperty(2);
 		if (EditorGUI.EndChangeCheck())
 		{
 			if (tex != map.textureValue)
@@ -219,8 +220,7 @@ public class MyLightingShaderGUI : ShaderGUI
 			}
 			foreach (Material mat in editor.targets)
 			{
-				mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
-					
+				mat.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
 			}
 		}
 	}

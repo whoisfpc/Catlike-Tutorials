@@ -1,6 +1,6 @@
 # Catlike-Tutorials
 
-拿来放catlike教程的相关代码，有些会做改动，也可能会加一些自己的实验和测试
+拿来放学习catlike教程时的相关代码，有些会做改动，也可能会加一些自己的实验和测试
 
 ## Catlike
 
@@ -27,7 +27,7 @@
 - [x] [Deferred Lighting](/Assets/ShaderFundamental)
 - [x] [Static Lighting](/Assets/ShaderFundamental)
 - [x] [Mixed Lighting](/Assets/ShaderFundamental)
-- [ ] Realtime GI, Probe Volumes, LOD Groups
+- [x] [Realtime GI, Probe Volumes, LOD Groups](/Assets/ShaderFundamental)
 - [ ] GPU Instancing
 - [ ] Parallax
 
