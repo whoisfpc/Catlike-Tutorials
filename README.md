@@ -29,7 +29,7 @@
 - [x] [Mixed Lighting](/Assets/ShaderFundamental)
 - [x] [Realtime GI, Probe Volumes, LOD Groups](/Assets/ShaderFundamental)
 - [x] [GPU Instancing](/Assets/ShaderFundamental)
-- [ ] Parallax
+- [x] [Parallax](/Assets/ShaderFundamental)
 
 ## My Examples and Experiments
 
