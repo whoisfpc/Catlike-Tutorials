@@ -22,6 +22,7 @@ Shader "Custom/My First Shader" {
 			float4 _MainTex_ST;
 
 			struct VertexData {
+				UNITY_VERTEX_INPUT_INSTANCE_ID
 				float4 position : POSITION;
 				float2 uv : TEXCOORD0;
 			};
@@ -33,6 +34,7 @@ Shader "Custom/My First Shader" {
 
 			Interpolators MyVertexProgram (VertexData v) {
 				Interpolators i;
+				UNITY_SETUP_INSTANCE_ID(v);
 				i.position = UnityObjectToClipPos(v.position);
 				i.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return i;
