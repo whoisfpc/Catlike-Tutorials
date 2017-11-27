@@ -1,6 +1,6 @@
 # Catlike-Tutorials
 
-拿来放学习catlike教程时的相关代码，有些会做改动，也可能会加一些自己的实验和测试
+拿来放学习catlike教程时的相关代码，有些会做改动，也可能会加一些自己的实验和测试。[catlike教程地址](http://catlikecoding.com)
 
 ## Catlike
 
@@ -30,6 +30,7 @@
 - [x] [Realtime GI, Probe Volumes, LOD Groups](/Assets/ShaderFundamental)
 - [x] [GPU Instancing](/Assets/ShaderFundamental)
 - [x] [Parallax](/Assets/ShaderFundamental)
+- [ ] Flat and Wireframe Shading
 
 ## My Examples and Experiments
 
