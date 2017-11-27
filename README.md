@@ -30,7 +30,7 @@
 - [x] [Realtime GI, Probe Volumes, LOD Groups](/Assets/ShaderFundamental)
 - [x] [GPU Instancing](/Assets/ShaderFundamental)
 - [x] [Parallax](/Assets/ShaderFundamental)
-- [ ] Flat and Wireframe Shading
+- [x] [Flat and Wireframe Shading](/Assets/ShaderFundamental)
 
 ## My Examples and Experiments
 
