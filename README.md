@@ -32,6 +32,7 @@
 - [x] [Parallax](/Assets/ShaderFundamental)
 - [x] [Flat and Wireframe Shading](/Assets/ShaderFundamental)
 - [x] [Tessellation](/Assets/ShaderFundamental)
+- [ ] [Surface Displacement](/Assets/ShaderFundamental)
 
 ## My Examples and Experiments
 
