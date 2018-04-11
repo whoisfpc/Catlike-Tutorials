@@ -7,10 +7,14 @@ namespace PostProcessing
 	public class BloomEffect : MonoBehaviour
 	{
 		public Shader bloomShader;
+		[Range(0, 10)]
+		public float intensity = 1;
 		[Range(1, 16)]
 		public int iterations = 1;
 		[Range(0, 10)]
 		public float threshold = 1;
+		[Range(0, 1)]
+		public float softThreshold = 0.5f;
 		public bool debug;
 
 		private const int BoxDownPrefilterPass  = 0;
@@ -30,7 +34,15 @@ namespace PostProcessing
 				bloom = new Material(bloomShader);
 				bloom.hideFlags = HideFlags.HideAndDontSave;
 			}
-			bloom.SetFloat("_Threshold", threshold);
+			float knee = threshold * softThreshold;
+			Vector4 filter;
+			filter.x = threshold;
+			filter.y = filter.x - knee;
+			filter.z = 2f * knee;
+			filter.w = 0.25f / (knee + 0.00001f);
+			bloom.SetVector("_Filter", filter);
+			bloom.SetFloat("_Intensity", Mathf.GammaToLinearSpace(intensity));
+
 			var width = src.width;
 			var height = src.height;
 			var format = src.format;
