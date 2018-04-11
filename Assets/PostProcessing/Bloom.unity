@@ -1021,6 +1021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   iterations: 1
+  bloomShader: {fileID: 4800000, guid: 6981df6758a4dd748a99c5f4dcea5734, type: 3}
 --- !u!1 &2067155670
 GameObject:
   m_ObjectHideFlags: 0
