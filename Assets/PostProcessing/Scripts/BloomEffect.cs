@@ -6,16 +6,18 @@ namespace PostProcessing
 	[ExecuteInEditMode, ImageEffectAllowedInSceneView]
 	public class BloomEffect : MonoBehaviour
 	{
+		public Shader bloomShader;
 		[Range(1, 16)]
 		public int iterations = 1;
 		[Range(0, 10)]
 		public float threshold = 1;
-		public Shader bloomShader;
+		public bool debug;
 
 		private const int BoxDownPrefilterPass  = 0;
 		private const int BoxDownPass = 1;
 		private const int BoxUpPass = 2;
 		private const int ApplyBloomPass = 3;
+		private const int DebugBloomPass = 4;
 
 		[NonSerialized]
 		private Material bloom;
@@ -60,8 +62,15 @@ namespace PostProcessing
 				currentSrc = currentDest;
 			}
 
-			bloom.SetTexture("_SourceTex", src);
-			Graphics.Blit(currentSrc, dest, bloom, ApplyBloomPass);
+			if (debug)
+			{
+				Graphics.Blit(currentSrc, dest, bloom, DebugBloomPass);
+			}
+			else
+			{
+				bloom.SetTexture("_SourceTex", src);
+				Graphics.Blit(currentSrc, dest, bloom, ApplyBloomPass);
+			}
 			RenderTexture.ReleaseTemporary(currentSrc);
 		}
 	}

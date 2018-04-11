@@ -1020,9 +1020,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91536cfe4bdaad4449bb37458b8ec1ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bloomShader: {fileID: 4800000, guid: 6981df6758a4dd748a99c5f4dcea5734, type: 3}
   iterations: 1
   threshold: 1
-  bloomShader: {fileID: 4800000, guid: 6981df6758a4dd748a99c5f4dcea5734, type: 3}
+  debug: 0
 --- !u!1 &2067155670
 GameObject:
   m_ObjectHideFlags: 0

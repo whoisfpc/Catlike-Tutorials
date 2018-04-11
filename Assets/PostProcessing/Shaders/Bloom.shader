@@ -100,7 +100,8 @@
 			ENDCG
 		}
 
-		Pass { // 3
+		Pass // 3
+		{
 			CGPROGRAM
 				#pragma vertex vert
 				#pragma fragment frag
@@ -110,6 +111,19 @@
 					half4 c = tex2D(_SourceTex, i.uv);
 					c.rgb += SampleBox(i.uv, 0.5);
 					return c;
+				}
+			ENDCG
+		}
+
+		Pass // 4
+		{
+			CGPROGRAM
+				#pragma vertex vert
+				#pragma fragment frag
+
+				half4 frag (v2f i) : SV_Target
+				{
+					return half4(SampleBox(i.uv, 0.5), 1);
 				}
 			ENDCG
 		}
