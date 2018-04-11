@@ -8,10 +8,14 @@ namespace PostProcessing
 	{
 		[Range(1, 16)]
 		public int iterations = 1;
+		[Range(0, 10)]
+		public float threshold = 1;
 		public Shader bloomShader;
 
-		private const int BoxDownPass = 0;
-		private const int BoxUpPass = 1;
+		private const int BoxDownPrefilterPass  = 0;
+		private const int BoxDownPass = 1;
+		private const int BoxUpPass = 2;
+		private const int ApplyBloomPass = 3;
 
 		[NonSerialized]
 		private Material bloom;
@@ -24,11 +28,12 @@ namespace PostProcessing
 				bloom = new Material(bloomShader);
 				bloom.hideFlags = HideFlags.HideAndDontSave;
 			}
+			bloom.SetFloat("_Threshold", threshold);
 			var width = src.width;
 			var height = src.height;
 			var format = src.format;
 			RenderTexture currentDest = textures[0] = RenderTexture.GetTemporary(width, height, 0, format);
-			Graphics.Blit(src, currentDest, bloom, BoxDownPass);
+			Graphics.Blit(src, currentDest, bloom, BoxDownPrefilterPass);
 			RenderTexture currentSrc = currentDest;
 
 			int i = 1;
@@ -55,7 +60,8 @@ namespace PostProcessing
 				currentSrc = currentDest;
 			}
 
-			Graphics.Blit(currentSrc, dest, bloom, BoxUpPass);
+			bloom.SetTexture("_SourceTex", src);
+			Graphics.Blit(currentSrc, dest, bloom, ApplyBloomPass);
 			RenderTexture.ReleaseTemporary(currentSrc);
 		}
 	}
