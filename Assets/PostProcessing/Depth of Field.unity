@@ -923,8 +923,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dofShader: {fileID: 4800000, guid: 3dc7600e7038a8047b0aa90a74935e64, type: 3}
   focusDistance: 10
-  focusRange: 3
-  bokehRadius: 4
+  focusRange: 4
+  bokehRadius: 3
 --- !u!1 &1169401581
 GameObject:
   m_ObjectHideFlags: 0

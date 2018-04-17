@@ -19,9 +19,10 @@ namespace PostProcessing
 		private Material dofMaterial;
 
 		private const int circleOfConfusionPass = 0;
-		private const int bokehPass = 1;
-		private const int postFilterPass = 2;
-
+		private const int preFilterPass = 1;
+		private const int bokehPass = 2;
+		private const int postFilterPass = 3;
+		private const int combinePass = 4;
 
 		void OnRenderImage (RenderTexture src, RenderTexture dest)
 		{
@@ -40,12 +41,14 @@ namespace PostProcessing
 			RenderTextureFormat format = src.format;
 			RenderTexture dof0 = RenderTexture.GetTemporary(width, height, 0, format);
 			RenderTexture dof1 = RenderTexture.GetTemporary(width, height, 0, format);
+			dofMaterial.SetTexture("_CoCTex", coc);
+			dofMaterial.SetTexture("_DoFTex", dof0);
 
 			Graphics.Blit(src, coc, dofMaterial, circleOfConfusionPass);
-			Graphics.Blit(src, dof0);
+			Graphics.Blit(src, dof0, dofMaterial, preFilterPass);
 			Graphics.Blit(dof0, dof1, dofMaterial, bokehPass);
 			Graphics.Blit(dof1, dof0, dofMaterial, postFilterPass);
-			Graphics.Blit(dof1, dest);
+			Graphics.Blit(src, dest, dofMaterial, combinePass);
 
 			RenderTexture.ReleaseTemporary(coc);
 			RenderTexture.ReleaseTemporary(dof0);
