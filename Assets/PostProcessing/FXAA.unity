@@ -833,7 +833,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5eaf1964dc5174949b5c29bc2824bae1, type: 2}
+  - {fileID: 2100000, guid: a3a2c2a9dd47135409e572f69d6ca5fb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1182,6 +1182,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fxaaShader: {fileID: 4800000, guid: 3556ed810dbf1c342987d980151d07c7, type: 3}
   luminanceSource: 2
+  contrastThreshold: 0.0312
+  relativeThreshold: 0.063
 --- !u!1 &1169401581
 GameObject:
   m_ObjectHideFlags: 0

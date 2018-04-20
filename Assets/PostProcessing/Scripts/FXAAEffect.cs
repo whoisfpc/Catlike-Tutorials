@@ -13,6 +13,28 @@ namespace PostProcessing
 
 		public LuminanceMode luminanceSource;
 
+		/// <summary>
+		/// Trims the algorithm from processing darks.
+		/// 0.0833 - upper limit (default, the start of visible unfiltered edges)
+		/// 0.0625 - high quality (faster)
+		/// 0.0312 - visible limit (slower)
+		/// </summary>
+		[Range(0.0312f, 0.0833f)]
+		[Tooltip("Trims the algorithm from processing darks.")]
+		public float contrastThreshold = 0.0312f;
+
+		/// <summary>
+		/// The minimum amount of local contrast required to apply algorithm.
+		/// 0.333 - too little (faster)
+		/// 0.250 - low quality
+		/// 0.166 - default
+		/// 0.125 - high quality 
+		/// 0.063 - overkill (slower)
+		/// </summary>
+		[Range(0.063f, 0.333f)]
+		[Tooltip("The minimum amount of local contrast required to apply algorithm.")]
+		public float relativeThreshold = 0.063f;
+
 		[NonSerialized]
 		private Material fxaaMaterial;
 
@@ -26,6 +48,9 @@ namespace PostProcessing
 				fxaaMaterial = new Material(fxaaShader);
 				fxaaMaterial.hideFlags = HideFlags.HideAndDontSave;
 			}
+
+			fxaaMaterial.SetFloat("_ContrastThreshold", contrastThreshold);
+			fxaaMaterial.SetFloat("_RelativeThreshold", relativeThreshold);
 
 			if (luminanceSource == LuminanceMode.Calculate)
 			{
