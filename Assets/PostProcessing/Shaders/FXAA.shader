@@ -30,6 +30,7 @@
 		sampler2D _MainTex;
 		float4 _MainTex_TexelSize;
 		float _ContrastThreshold, _RelativeThreshold;
+		float _SubpixelBlending;
 
 		float4 Sample (float2 uv)
 		{
@@ -90,7 +91,7 @@
 			filter = abs(filter - l.m);
 			filter = saturate(filter / l.contrast);
 			float blendFactor = smoothstep(0, 1, filter);
-			return blendFactor * blendFactor;
+			return blendFactor * blendFactor * _SubpixelBlending;
 		}
 
 		struct EdgeData {
