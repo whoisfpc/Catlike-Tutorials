@@ -49,6 +49,9 @@ namespace PostProcessing
 
 		public bool lowQuality;
 
+		[Tooltip("Blending color in gamma space.")]
+		public bool gammaBlending;
+
 		[NonSerialized]
 		private Material fxaaMaterial;
 
@@ -73,6 +76,15 @@ namespace PostProcessing
 			else
 			{
 				fxaaMaterial.DisableKeyword("LOW_QUALITY");
+			}
+
+			if (gammaBlending)
+			{
+				fxaaMaterial.EnableKeyword("GAMMA_BLENDING");
+			}
+			else
+			{
+				fxaaMaterial.DisableKeyword("GAMMA_BLENDING");
 			}
 
 			if (luminanceSource == LuminanceMode.Calculate)
