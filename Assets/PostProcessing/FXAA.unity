@@ -1185,6 +1185,7 @@ MonoBehaviour:
   contrastThreshold: 0.0312
   relativeThreshold: 0.063
   subpixelBlending: 1
+  lowQuality: 0
 --- !u!1 &1169401581
 GameObject:
   m_ObjectHideFlags: 0

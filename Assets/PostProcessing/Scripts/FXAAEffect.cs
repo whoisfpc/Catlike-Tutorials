@@ -47,6 +47,8 @@ namespace PostProcessing
 		[Range(0f, 1f)]
 		public float subpixelBlending = 1f;
 
+		public bool lowQuality;
+
 		[NonSerialized]
 		private Material fxaaMaterial;
 
@@ -64,6 +66,14 @@ namespace PostProcessing
 			fxaaMaterial.SetFloat("_ContrastThreshold", contrastThreshold);
 			fxaaMaterial.SetFloat("_RelativeThreshold", relativeThreshold);
 			fxaaMaterial.SetFloat("_SubpixelBlending", subpixelBlending);
+			if (lowQuality)
+			{
+				fxaaMaterial.EnableKeyword("LOW_QUALITY");
+			}
+			else
+			{
+				fxaaMaterial.DisableKeyword("LOW_QUALITY");
+			}
 
 			if (luminanceSource == LuminanceMode.Calculate)
 			{
