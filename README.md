@@ -40,3 +40,4 @@
 - [BSpline](/Assets/BSpline)
 - [ClipBox](/Assets/ClipBox)
 - [Subdivision](/Assets/Subdivision)
+- [SelectHighlight](/Assets/SelectHighlight)
