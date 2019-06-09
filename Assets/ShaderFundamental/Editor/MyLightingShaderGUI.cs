@@ -63,7 +63,6 @@ public class MyLightingShaderGUI : ShaderGUI
 		};
 	}
 	private static GUIContent staticLabel = new GUIContent();
-	private static ColorPickerHDRConfig emissionConfig = new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
 	private Material target;
 	private MaterialEditor editor;
 	private MaterialProperty[] properties;
@@ -289,9 +288,7 @@ public class MyLightingShaderGUI : ShaderGUI
 		EditorGUI.BeginChangeCheck();
 		editor.TexturePropertyWithHDRColor(
 			MakeLabel(map, "Emission (RGB)"), map,
-			FindProperty("_Emission"),
-			emissionConfig,
-			false
+			FindProperty("_Emission"), false
 		);
 		editor.LightmapEmissionProperty(2);
 		if (EditorGUI.EndChangeCheck())

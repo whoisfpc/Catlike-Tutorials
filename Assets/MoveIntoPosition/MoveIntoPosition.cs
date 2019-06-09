@@ -7,9 +7,7 @@ public class MoveIntoPosition : MonoBehaviour
     MaterialPropertyBlock props;
 
     [SerializeField]
-    Transform target;
-
-    float value = 0;
+    public Transform target;
 
     [SerializeField]
     float appearSpeed = 10f;
@@ -24,7 +22,7 @@ public class MoveIntoPosition : MonoBehaviour
     bool keep = false;
 
     [SerializeField]
-    MeshRenderer[] objects;
+    public MeshRenderer[] objects;
 
     [SerializeField]
     float[] values;

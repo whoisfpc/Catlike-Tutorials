@@ -8,11 +8,11 @@ public class FPSDisplay : MonoBehaviour
 	public Text highestFPSLabel, averageFPSLabel, lowestFPSLabel;
 	FPSCounter fpsCounter;
 	[SerializeField]
-	private FPSColor[] coloring;
+	public FPSColor[] coloring;
 	private static string[] stringsFrom00To99;
 
 	[System.Serializable]
-	private struct FPSColor
+	public struct FPSColor
 	{
 		public Color color;
 		public int minimumFPS;
