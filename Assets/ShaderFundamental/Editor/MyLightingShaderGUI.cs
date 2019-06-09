@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class MyLightingShaderGUI : ShaderGUI
+public class MyLightingShaderGUI : MyBaseShaderGUI
 {
 	private enum SmoothnessSource
 	{
@@ -62,17 +62,11 @@ public class MyLightingShaderGUI : ShaderGUI
 			}
 		};
 	}
-	private static GUIContent staticLabel = new GUIContent();
-	private Material target;
-	private MaterialEditor editor;
-	private MaterialProperty[] properties;
 	private bool shouldShowAlphaCutoff;
 
 	public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
 	{
-		this.target = materialEditor.target as Material;
-		this.editor = materialEditor;
-		this.properties = properties;
+		base.OnGUI(materialEditor, properties);
 		DoRenderingMode();
 		if (target.HasProperty("_TessellationUniform"))
 		{
@@ -377,52 +371,5 @@ public class MyLightingShaderGUI : ShaderGUI
 	{
 		GUILayout.Label("Advanced Options", EditorStyles.boldLabel);
 		editor.EnableInstancingField();
-	}
-
-	private void RecordAction(string label)
-	{
-		editor.RegisterPropertyChangeUndo(label);
-	}
-
-	private bool IsKeywordEnabled(string keyword)
-	{
-		return target.IsKeywordEnabled(keyword);
-	}
-
-	private void SetKeyword(string keyword, bool state)
-	{
-		if (state)
-		{
-			foreach (Material m in editor.targets)
-			{
-				m.EnableKeyword(keyword);
-			}
-		}
-		else
-		{
-			foreach (Material m in editor.targets)
-			{
-				m.DisableKeyword(keyword);
-			}
-		}
-	}
-
-	private MaterialProperty FindProperty(string name)
-	{
-		return FindProperty(name, properties);
-	}
-
-	private static GUIContent MakeLabel(string name, string tooltip = null)
-	{
-		staticLabel.text = name;
-		staticLabel.tooltip = tooltip;
-		return staticLabel;
-	}
-
-	private static GUIContent MakeLabel(MaterialProperty property, string tooltip = null)
-	{
-		staticLabel.text = property.displayName;
-		staticLabel.tooltip = tooltip;
-		return staticLabel;
 	}
 }
