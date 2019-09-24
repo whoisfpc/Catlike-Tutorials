@@ -42,3 +42,4 @@
 - [Subdivision](/Assets/Subdivision)
 - [SelectHighlight](/Assets/SelectHighlight)
 - [MoveIntoPosition](/Assets/MoveIntoPosition)
+- [SelectBlur](/Assets/SelectBlur)
