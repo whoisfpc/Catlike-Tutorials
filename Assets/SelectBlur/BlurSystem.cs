@@ -13,7 +13,10 @@ namespace SelectBlur
         public static void Add(BlurObj blurObj)
         {
             if (!blurObjSet.Contains(blurObj))
+            {
+                blurObj.ToAdd();
                 blurObjSet.Add(blurObj);
+            }
         }
 
         public static void Remove(BlurObj blurObj)
@@ -32,20 +35,30 @@ namespace SelectBlur
                 obj.ToRemove();
             }
             blurObjSet.Clear();
+            blurObj.ToAdd();
             blurObjSet.Add(blurObj);
         }
 
+        public Shader depthOnlyShader;
         private CommandBuffer blurBuffer;
         private Camera cam;
-        private RenderTexture rt, dt;
+        private Camera depthCam;
+        private RenderTexture rt, dt, wt;
 
         private void Awake()
         {
             cam = GetComponent<Camera>();
             rt = new RenderTexture(Screen.width, Screen.height, 24);
             rt.filterMode = FilterMode.Bilinear;
-            dt = new RenderTexture(Screen.width, Screen.height, 24);
-            dt.filterMode = FilterMode.Bilinear;
+            dt = new RenderTexture(rt);
+            wt = new RenderTexture(rt);
+        }
+
+        private void OnDestroy()
+        {
+            rt?.Release();
+            dt?.Release();
+            wt?.Release();
         }
 
         private void OnDisable()
@@ -66,10 +79,20 @@ namespace SelectBlur
             }
         }
 
-        private void OnPreRender()
+        private void OnPostRender()
         {
             if (!cam)
+            {
                 return;
+            }
+            if (depthCam == null)
+            {
+                GameObject go = new GameObject("depthCam");
+                depthCam = go.AddComponent<Camera>();
+                depthCam.enabled = false;
+                go.hideFlags = HideFlags.DontSave;
+            }
+            depthCam.CopyFrom(cam);
             if (blurBuffer != null)
             {
                 blurBuffer.Clear();
@@ -78,11 +101,16 @@ namespace SelectBlur
             {
                 blurBuffer = new CommandBuffer();
                 blurBuffer.name = "Blur map buffer";
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blurBuffer);
+                cam.AddCommandBuffer(CameraEvent.BeforeImageEffects, blurBuffer);
             }
 
+            depthCam.SetTargetBuffers(rt.colorBuffer, rt.depthBuffer);
+            depthCam.Render();
+            // TODO: need to replace
+            //depthCam.RenderWithShader(depthOnlyShader, "");
+
             blurBuffer.SetRenderTarget(rt);
-            blurBuffer.ClearRenderTarget(true, true, Color.black);
+            blurBuffer.ClearRenderTarget(false, true, Color.clear);
 
             foreach (BlurObj o in blurObjSet)
             {
@@ -96,7 +124,6 @@ namespace SelectBlur
             // set render texture as globally accessable 'blur map' texture
             BlurImage(rt, dt);
             blurBuffer.SetGlobalTexture("_BlurMap", dt);
-
         }
 
         const int BoxDownPass = 0;

@@ -4,6 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
+  - depthOnlyShader: {fileID: 4800000, guid: 24ced7ca013a6ae42ac46c062c1622e7, type: 3}
   - blurShader: {fileID: 4800000, guid: d561d0c9da16a3246a1adff017de54ac, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
