@@ -6,6 +6,7 @@ MonoImporter:
   defaultReferences:
   - depthOnlyShader: {fileID: 4800000, guid: 24ced7ca013a6ae42ac46c062c1622e7, type: 3}
   - blurShader: {fileID: 4800000, guid: d561d0c9da16a3246a1adff017de54ac, type: 3}
+  - combineShader: {fileID: 4800000, guid: 2348bc05c139aac428925dd2d76cc3f8, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

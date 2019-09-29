@@ -6,7 +6,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "LightMode" = "Deferred"}
+        Tags { "RenderType"="Opaque"}
         Cull Back ZWrite On ZTest LEqual
 
         Pass

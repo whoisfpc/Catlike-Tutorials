@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 41021022}
   - component: {fileID: 41021021}
   - component: {fileID: 41021020}
-  - component: {fileID: 41021023}
   - component: {fileID: 41021024}
   m_Layer: 0
   m_Name: Main Camera
@@ -205,19 +204,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &41021023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41021019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 454add923cdf4fe4da7bc82a927cc22b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  combineShader: {fileID: 4800000, guid: 2348bc05c139aac428925dd2d76cc3f8, type: 3}
 --- !u!114 &41021024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,6 +219,7 @@ MonoBehaviour:
   depthOnlyShader: {fileID: 4800000, guid: 24ced7ca013a6ae42ac46c062c1622e7, type: 3}
   blurShader: {fileID: 4800000, guid: d561d0c9da16a3246a1adff017de54ac, type: 3}
   iterations: 4
+  combineShader: {fileID: 4800000, guid: 2348bc05c139aac428925dd2d76cc3f8, type: 3}
 --- !u!1 &97372612
 GameObject:
   m_ObjectHideFlags: 0

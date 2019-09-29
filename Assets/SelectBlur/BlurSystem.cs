@@ -75,11 +75,11 @@ namespace SelectBlur
         {
             if (blurBuffer != null)
             {
-                cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, blurBuffer);
+                cam.RemoveCommandBuffer(CameraEvent.BeforeImageEffects, blurBuffer);
             }
         }
 
-        private void OnPostRender()
+        private void OnPreRender()
         {
             if (!cam)
             {
@@ -93,6 +93,9 @@ namespace SelectBlur
                 go.hideFlags = HideFlags.DontSave;
             }
             depthCam.CopyFrom(cam);
+            depthCam.renderingPath = RenderingPath.Forward;
+            depthCam.SetTargetBuffers(rt.colorBuffer, rt.depthBuffer);
+            depthCam.RenderWithShader(depthOnlyShader, "");
             if (blurBuffer != null)
             {
                 blurBuffer.Clear();
@@ -103,9 +106,6 @@ namespace SelectBlur
                 blurBuffer.name = "Blur map buffer";
                 cam.AddCommandBuffer(CameraEvent.BeforeImageEffects, blurBuffer);
             }
-
-            depthCam.SetTargetBuffers(rt.colorBuffer, rt.depthBuffer);
-            depthCam.RenderWithShader(depthOnlyShader, "");
 
             blurBuffer.SetRenderTarget(rt);
             blurBuffer.ClearRenderTarget(false, true, Color.clear);
@@ -118,16 +118,11 @@ namespace SelectBlur
                     blurBuffer.DrawRenderer(r, r.sharedMaterial);
                 }
             }
-
-            // set render texture as globally accessable 'blur map' texture
-            BlurImage(rt, dt);
-            blurBuffer.SetGlobalTexture("_BlurMap", dt);
         }
 
         const int BoxDownPass = 0;
         const int BoxUpPass = 1;
 
-        [HideInInspector]
         public Shader blurShader;
 
         [Range(1, 16)]
@@ -176,6 +171,28 @@ namespace SelectBlur
 
             Graphics.Blit(currentSource, destination, blur, BoxUpPass);
             RenderTexture.ReleaseTemporary(currentSource);
+        }
+
+        public Shader combineShader;
+        [System.NonSerialized]
+        Material combine;
+
+        void Start()
+        {
+            cam = GetComponent<Camera>();
+            cam.depthTextureMode = DepthTextureMode.Depth;
+        }
+
+        void OnRenderImage(RenderTexture source, RenderTexture destination)
+        {
+            if (combine == null) {
+                combine = new Material(combineShader);
+                combine.hideFlags = HideFlags.HideAndDontSave;
+            }
+            BlurImage(rt, dt);
+            // set render texture as globally accessable 'blur map' texture
+            Shader.SetGlobalTexture("_BlurMap", dt);
+            Graphics.Blit(source, destination, combine);
         }
     }
 }
