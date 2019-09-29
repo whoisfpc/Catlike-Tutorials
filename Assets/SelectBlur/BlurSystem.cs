@@ -105,9 +105,7 @@ namespace SelectBlur
             }
 
             depthCam.SetTargetBuffers(rt.colorBuffer, rt.depthBuffer);
-            depthCam.Render();
-            // TODO: need to replace
-            //depthCam.RenderWithShader(depthOnlyShader, "");
+            depthCam.RenderWithShader(depthOnlyShader, "");
 
             blurBuffer.SetRenderTarget(rt);
             blurBuffer.ClearRenderTarget(false, true, Color.clear);
